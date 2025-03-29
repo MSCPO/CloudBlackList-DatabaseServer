@@ -1,8 +1,10 @@
 package cn.etstmc.cloudblacklist.network.server;
 
+import cn.etstmc.cloudblacklist.Kernel;
 import cn.etstmc.cloudblacklist.api.network.PacketListener;
 import cn.etstmc.cloudblacklist.network.Packet;
 import cn.etstmc.cloudblacklist.network.PacketType;
+import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 
@@ -13,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import static cn.etstmc.cloudblacklist.Kernel.logger;
 
+@ChannelHandler.Sharable
 public class TCPServer extends ChannelInboundHandlerAdapter {
     private final Map<String, ChannelHandlerContext> CHANNELS = new ConcurrentHashMap<>();
     private final Map<Class<? extends PacketType>, List<PacketListener<? extends Packet>>> listeners = new ConcurrentHashMap<>();
@@ -27,8 +30,18 @@ public class TCPServer extends ChannelInboundHandlerAdapter {
 
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) throws Exception {
-        if (msg instanceof Packet) {
-            Packet p1 = (Packet) msg;
+        if (msg instanceof Packet packet) {
+            PacketType pt = Kernel.packetManager.getPacketType(packet.getType());
+            if (pt == null) return;
+            Class<? extends PacketType> type = pt.getClass();
+            if (listeners.get(type) == null) return;
+            List<PacketListener<? extends Packet>> list = listeners.get(type);
+            if (list == null || list.isEmpty()) {
+                return;
+            }
+            for (PacketListener<? extends Packet> packetListener : list) {
+                packetListener.checkPacket(packet, ctx);
+            }
         }
     }
 
