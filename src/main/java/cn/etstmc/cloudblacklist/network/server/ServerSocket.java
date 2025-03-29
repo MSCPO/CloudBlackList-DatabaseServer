@@ -44,7 +44,6 @@ public class ServerSocket {
                     .option(ChannelOption.SO_BACKLOG, 128)
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture channelFuture = serverBootstrap.bind(host, port).sync();
-            logger.info("Netty基础框架加载完成！");
             logger.info("服务端已启动，监听 {}:{}", host, port);
             channelFuture.channel().closeFuture().sync();
         } finally {
