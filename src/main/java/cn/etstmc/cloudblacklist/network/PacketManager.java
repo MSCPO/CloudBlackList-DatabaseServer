@@ -37,7 +37,7 @@ public class PacketManager {
         try {
             return clazz.getDeclaredConstructor(String.class).newInstance(body);
         } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
-            logger.warning("收到无法解析的网络数据包：\n" + ExceptionUtils.getStackTrace(e.getCause()));
+            logger.warn("收到无法解析的网络数据包：\n{}", ExceptionUtils.getStackTrace(e.getCause()));
             return null;
         }
     }

@@ -9,9 +9,9 @@ public class HandShakePacketListener extends PacketListener<ClientBoundHandShake
     @Override
     public void onPacket(ClientBoundHandShakePacket packet) {
         if (!packet.isSuccess()) {
-            logger.warning("与数据库服务器握手失败！");
+            logger.warn("与数据库服务器握手失败！");
             return;
         }
-        logger.info("与数据库服务器握手成功，数据库服务器版本：" + packet.getDbsVersion());
+        logger.info("与数据库服务器握手成功，数据库服务器版本：{}", packet.getDbsVersion());
     }
 }

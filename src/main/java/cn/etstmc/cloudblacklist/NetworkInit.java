@@ -13,7 +13,7 @@ public class NetworkInit {
         //
         Register.registerPacket(HandShakePacketType.class, ServerBoundHandShakePacket.class, 0);
         //
-        Kernel.networkManager.getClient().registerPacketListener(HandShakePacketType.class, new HandShakePacketListener());
+        Kernel.networkManager.getServer().registerPacketListener(HandShakePacketType.class, new HandShakePacketListener());
         //
     }
 }

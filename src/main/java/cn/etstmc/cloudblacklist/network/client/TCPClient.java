@@ -21,7 +21,7 @@ public class TCPClient extends SimpleChannelInboundHandler<Packet> {
 
     public void registerPacketListener (Class<? extends PacketType> clazz, PacketListener<? extends Packet> listener) {
         if (clazz == null || listener == null) {
-            logger.warning("参数clazz或listener不能为null！");
+            logger.warn("参数clazz或listener不能为null！");
         }
         List<PacketListener<? extends Packet>> list = listeners.computeIfAbsent(clazz, k -> new ArrayList<>());
         list.add(listener);
@@ -48,12 +48,18 @@ public class TCPClient extends SimpleChannelInboundHandler<Packet> {
     }
 
     @Override
+    public void channelInactive (ChannelHandlerContext ctx) throws Exception {
+        super.channelInactive(ctx);
+        SERVER_CHANNEL = null;
+    }
+
+    @Override
     public void exceptionCaught(ChannelHandlerContext ctx, Throwable cause) throws Exception {
         if (cause instanceof RuntimeException) {
-            logger.warning("发生运行时异常：\n" + ExceptionUtils.getStackTrace(cause));
+            logger.warn("发生运行时异常：\n{}", ExceptionUtils.getStackTrace(cause));
             return;
         }
-        logger.warning("数据库网络连接发生异常（" + ctx.channel().remoteAddress() + "）：\n" + ExceptionUtils.getStackTrace(cause));
+        logger.warn("数据库网络连接发生异常（{}）：\n{}", ctx.channel().remoteAddress(), ExceptionUtils.getStackTrace(cause));
         ctx.close();
     }
 
