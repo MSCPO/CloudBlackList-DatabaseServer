@@ -17,6 +17,9 @@ public class ServerSocket {
     private final String host;
     private final int port;
     private final TCPServer server;
+    EventLoopGroup bossGroup;
+    EventLoopGroup workerGroup;
+    private boolean started = false;
 
     public ServerSocket (String host, int port) {
         this.host = host;
@@ -25,8 +28,8 @@ public class ServerSocket {
     }
 
     public void start() throws Exception {
-        EventLoopGroup bossGroup = new NioEventLoopGroup(1);
-        EventLoopGroup workerGroup = new NioEventLoopGroup();
+        bossGroup = new NioEventLoopGroup(1);
+        workerGroup = new NioEventLoopGroup();
 
         try {
             ServerBootstrap serverBootstrap = new ServerBootstrap();
@@ -45,6 +48,7 @@ public class ServerSocket {
                     .childOption(ChannelOption.SO_KEEPALIVE, true);
             ChannelFuture channelFuture = serverBootstrap.bind(host, port).sync();
             logger.info("服务端已启动，监听 {}:{}", host, port);
+            started = true;
             channelFuture.channel().closeFuture().sync();
         } finally {
             bossGroup.shutdownGracefully();
@@ -54,5 +58,19 @@ public class ServerSocket {
 
     public TCPServer getServer() {
         return server;
+    }
+
+    public void kill () {
+        if (bossGroup != null && !bossGroup.isShutdown()) {
+            bossGroup.shutdownGracefully();
+        }
+        if (workerGroup != null && !workerGroup.isShutdown()) {
+            workerGroup.shutdownGracefully();
+        }
+        logger.info("服务端已关闭");
+    }
+
+    public boolean isStarted() {
+        return started;
     }
 }

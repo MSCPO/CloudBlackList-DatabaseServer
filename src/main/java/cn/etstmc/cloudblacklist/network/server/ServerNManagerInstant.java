@@ -11,11 +11,14 @@ public class ServerNManagerInstant implements ServerNetworkManager {
 
     public ServerNManagerInstant (String host, int port) {
         this.socket = new ServerSocket(host, port);
-        try {
-            socket.start();
-        } catch (Exception e) {
-            logger.warn("发生异常：{}", ExceptionUtils.getStackTrace(e));
-        }
+        new Thread (() -> {
+            try {
+                Thread.currentThread().setName("SERVER-THREAD");
+                socket.start();
+            } catch (Exception e) {
+                logger.warn("发生异常：{}", ExceptionUtils.getStackTrace(e));
+            }
+        }).start();
     }
     @Override
     public ServerSocket getSocket() {
