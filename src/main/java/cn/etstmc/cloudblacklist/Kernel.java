@@ -34,6 +34,7 @@ public class Kernel {
         NetworkInit.init();
         //
         logger.info("加载完成，耗时 {} ms", System.currentTimeMillis() - start);
+        logger.info("使用 help 来获取帮助！");
         commandManager = new CommandManager();
     }
 
