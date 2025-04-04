@@ -2,6 +2,7 @@ package cn.etstmc.cloudblacklist.network.server;
 
 import cn.etstmc.cloudblacklist.network.PacketDecoder;
 import cn.etstmc.cloudblacklist.network.PacketEncoder;
+import cn.etstmc.cloudblacklist.utils.ThreadUtils;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
@@ -38,10 +39,10 @@ public class ServerSocket {
                     .childHandler(new ChannelInitializer<SocketChannel>() {
                         @Override
                         protected void initChannel(SocketChannel socketChannel) throws Exception {
-
                             socketChannel.pipeline().addLast(new PacketDecoder());
                             socketChannel.pipeline().addLast(new PacketEncoder());
                             socketChannel.pipeline().addLast(server);
+                            ThreadUtils.setThreadName("SERVER-THREAD");
                         }
                     })
                     .option(ChannelOption.SO_BACKLOG, 128)
