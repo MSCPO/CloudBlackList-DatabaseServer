@@ -86,7 +86,7 @@ public class ServerBoundHandShakePacket extends Packet {
         return type;
     }
 
-    public void setType(ServerType type) {
+    public void setServerType(ServerType type) {
         this.type = type;
     }
 
